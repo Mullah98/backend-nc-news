@@ -1,5 +1,7 @@
 const db = require("../db/connection.js");
 const data = require('../db/data/test-data')
+const fs = require('fs')
+const path = require('path')
 
 
 exports.selectTopics = () => {
@@ -9,4 +11,3 @@ exports.selectTopics = () => {
         return results.rows
     })
 }
-

@@ -1,13 +1,21 @@
+const fs = require('fs')
+const path = require('path')
+const endpoints = require('../endpoints.json');
 const {
     selectTopics
 } = require('../model/topics.model');
+
 
 const getTopics = (req, res, next) => {
     const body = req.body
     return selectTopics(body)
     .then((result) => {
-        res.status(200).send(result)
+        res.status(200).send({topics: result})
 })
 }
 
-module.exports = {getTopics}
+const getEndpoints = (req, res, next) => {
+    res.status(200).send({ endpoints })
+};
+
+module.exports = {getTopics, getEndpoints}
