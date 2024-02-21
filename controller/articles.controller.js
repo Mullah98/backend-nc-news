@@ -1,5 +1,5 @@
 const {
-    selectArticleId
+    selectArticleId, selectArticles
 } = require('../model/articles.model');
 
 
@@ -11,7 +11,7 @@ const getArticleId = (req, res, next) => {
         if (article) {
             res.status(200).send(article);
         } else {
-            res.status(404).send({status: 404, msg: 'Article not found'})
+            res.status(404).send({status: 404, msg: 'Unable to find article'})
         }
     })
     .catch((error) => {
@@ -19,4 +19,15 @@ const getArticleId = (req, res, next) => {
     });
 };
 
-module.exports = { getArticleId }
+const getArticles = (req, res, next) => {
+    const body = req.body
+    return selectArticles(body)
+    .then((result) => {
+        res.status(200).send(result)
+    })
+    .catch((error) => {
+        next(error)
+    })
+}
+
+module.exports = { getArticleId, getArticles }

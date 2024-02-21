@@ -36,13 +36,13 @@ describe('/api/*', () => {
         .expect(404)
         .then((response) => {
             const msg = response.body.msg
-            expect(msg).toBe('Unable to find')
+            expect(msg).toBe('Unable to find article')
         })
     })
 })
 
 describe('endpoints', () => {
-    test('Respond with an object describing all the available endpoints on your API', () => {
+    test('Should respond with an object describing all the available endpoints on your API', () => {
         return request(app)
         .get('/api')
         .expect(200)
@@ -53,7 +53,7 @@ describe('endpoints', () => {
 })
 
 describe('/api/articles/:article_id', () => {
-    test('GET: 200 Responds with an article object', () => {
+    test('GET:200 Should respond with an article object', () => {
         return request(app)
         .get('/api/article/1')
         .expect(200)
@@ -71,22 +71,71 @@ describe('/api/articles/:article_id', () => {
               })
         })
     })
-    test('GET:404 sends an appropriate status and error message when given a valid but non-existent id', () => {
+    test('GET:404 Should respond with a appropriate status and error message when given a valid but non-existent id', () => {
         return request(app)
         .get('/api/article/999')
         .expect(404)
         .then((response) => {
             expect(response.body.status).toBe(404)
-            expect(response.body.msg).toBe('Article not found')
+            expect(response.body.msg).toBe('Unable to find article')
         })
     })
-    test('GET:400 sends an appropriate status and error message when given an invalid id', () => {
+    test('GET:400 Should respond with an appropriate status and error message when given an invalid id', () => {
         return request(app)
         .get('/api/article/invalid')
         .expect(400)
         .then((response) => {
             expect(response.body.status).toBe(400)
             expect(response.body.msg).toBe('Bad request')
+        })
+    })
+})
+
+describe('/api/articles', () => {
+    test('GET:200 Should respond with an articles array of article objects', () => {
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then((response) => {
+            expect(Array.isArray(response.body)).toBe(true)
+            expect(typeof response.body).toBe('object')
+            expect(response.body).toHaveLength(13)
+        })
+    })
+    test('GET:200 Should contain the correct property keys except the body property', () => {
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then((response) => {
+            const articles = response.body
+            articles.forEach((article) => {
+                expect(article).toHaveProperty('title')
+                expect(article).toHaveProperty('topic')
+                expect(article).toHaveProperty('author')
+                expect(article).toHaveProperty('created_at')
+                expect(article).toHaveProperty('votes')
+                expect(article).toHaveProperty('article_img_url')
+                expect(article).toHaveProperty('comment_count')
+                expect(article).not.toHaveProperty('body')
+            })
+        })
+    })
+    test('GET:200 Articles should be sorted by date in descending order', () => {
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then((response) => {
+            const articles = response.body
+            expect(articles[0].created_at).toContain('2020-11-03')
+            expect(articles[12].created_at).toContain('2020-01-07')
+        })
+    })
+    test('GET:404 Should respond with an appropiate status and error message when given a valid but not existant endpoint', () => {
+        return request(app)
+        .get('/api/articlez')
+        .expect(404)
+        .then((response) => {
+            expect(response.body.msg).toBe('Unable to find article')
         })
     })
 })
