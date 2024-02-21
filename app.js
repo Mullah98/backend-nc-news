@@ -2,6 +2,7 @@ const express = require('express')
 const app = express();
 const { getTopics, getEndpoints } = require('./controller/topics.controller')
 const { getArticleId, getArticles } = require('./controller/articles.controller')
+const { getComments } = require('./controller/comments.controller')
 
 
 app.get("/api/topics", getTopics)
@@ -11,6 +12,8 @@ app.get("/api", getEndpoints)
 app.get("/api/article/:article_id", getArticleId)
 
 app.get("/api/articles", getArticles)
+
+app.get('/api/articles/:article_id/comments', getComments)
 
 
 //Error handling middleware

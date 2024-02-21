@@ -139,3 +139,62 @@ describe('/api/articles', () => {
         })
     })
 })
+
+ describe('/api/articles/:article_id/comments', () => {
+    test('GET:200 Should respond with an array of objects', () => {
+        return request(app)
+        .get('/api/articles/1/comments')
+        .expect(200)
+        .then((response) => {
+            expect(Array.isArray(response.body)).toBe(true)
+            response.body.forEach((body) => {
+                expect(typeof body).toBe('object')
+            })
+        })
+    })
+    test('GET:200 Should contain the correct properties', () => {
+        return request(app)
+        .get('/api/articles/1/comments')
+        .expect(200)
+        .then((response) => {
+        const comments = response.body
+        comments.forEach((comment) => {
+            expect(comment).toHaveProperty('comment_id')
+            expect(comment).toHaveProperty('votes')
+            expect(comment).toHaveProperty('created_at')
+            expect(comment).toHaveProperty('author')
+            expect(comment).toHaveProperty('body')
+            expect(comment).toHaveProperty('article_id')
+        })
+        })
+    })
+    test('GET:200 Should be served with the most recent comments first', () => {
+        return request(app)
+        .get('/api/articles/1/comments')
+        .expect(200)
+        .then((response) => {
+            const comments = response.body
+            expect(comments).toBeSortedBy('created_at', {
+                descending: true
+            })
+        })
+    })
+    test('GET:404 Should respond with a appropriate status and error message when given a valid but non-existent id', () => {
+        return request(app)
+        .get('/api/articles/999/comments')
+        .expect(404)
+        .then((response) => {
+            expect(response.body.status).toBe(404)
+            expect(response.body.msg).toBe('Unable to find comments')
+        })
+    })
+    test('GET:400 Should respond with an appropriate status and error message when given an invalid id', () => {
+        return request(app)
+        .get('/api/articles/invalid/comments')
+        .expect(400)
+        .then((response) => {
+            expect(response.body.status).toBe(400)
+            expect(response.body.msg).toBe('Bad request')
+        })
+    })
+ })
