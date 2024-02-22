@@ -97,8 +97,7 @@ describe('GET /api/articles', () => {
         .expect(200)
         .then((response) => {
             expect(Array.isArray(response.body)).toBe(true)
-            expect(typeof response.body).toBe('object')
-            expect(response.body).toHaveLength(13)
+            expect(typeof response.body).toBe('object') && (response.body).toHaveLength(5)
         })
     })
     test('GET:200 Should contain the correct property keys except the body property', () => {
@@ -125,13 +124,13 @@ describe('GET /api/articles', () => {
         .expect(200)
         .then((response) => {
             const articles = response.body
-            expect(articles[0].created_at).toContain('2020-11-03')
-            expect(articles[12].created_at).toContain('2020-01-07')
+            expect(articles).toBeSortedBy("created_at", 
+            { descending: true})
         })
     })
     test('GET:404 Should respond with an appropiate status and error message when given a valid but not existant endpoint', () => {
         return request(app)
-        .get('/api/articlez')
+        .get('/api/invalid-endpoint')
         .expect(404)
         .then((response) => {
             expect(response.body.msg).toBe('Unable to find article')

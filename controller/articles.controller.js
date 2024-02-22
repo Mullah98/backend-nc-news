@@ -20,8 +20,7 @@ const getArticleId = (req, res, next) => {
 };
 
 const getArticles = (req, res, next) => {
-    const body = req.body
-    return selectArticles(body)
+    return selectArticles()
     .then((result) => {
         res.status(200).send(result)
     })
