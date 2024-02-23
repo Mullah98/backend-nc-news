@@ -7,7 +7,7 @@ const getComments = (req, res, next) => {
         if (comments && comments.length > 0) {
             res.status(200).send(comments)
         } else {
-            res.status(404).send({status: 404, msg: 'Unable to find comments'})
+            res.status(404).send({ status: 404, msg: 'No comments found for this article'})
         }
     })
     .catch((error) => {
