@@ -76,5 +76,17 @@
       "votes": 0,
       "created_at": "2024-02-22T14:10:45.156Z"
     }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "Updates votes of the given article_id with given value",
+    "queries": ["article_id"],
+    "exampleResponse": {
+      "comment_id": 19,
+      "body": "This article is sensational",
+      "article_id": 1,
+      "author": "lurker",
+      "votes": 110,
+      "created_at": "2024-02-22T14:10:45.156Z"
+    }
   }
 }

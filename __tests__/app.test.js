@@ -282,3 +282,62 @@ describe('GET /api/articles', () => {
         })
     })
 })
+describe('/api/articles/:article_id', () => {
+    test('GET:201 Should update an article by article_id', () => {
+        const votes = { 'inc_votes': 10}
+        return request(app)
+        .patch('/api/articles/1')
+        .send(votes)
+        .set('accept', 'application/json')
+        .expect(201)
+        .then((response) => {
+            const article = response.body.article
+            expect(article.votes).toBe(110)
+        })
+    })
+    test('GET:201 Should decrease article vote when given a negative number', () => {
+        const votes = { 'inc_votes': -100}
+        return request(app)
+        .patch('/api/articles/1')
+        .send(votes)
+        .set('accept', 'application/json')
+        .expect(201)
+        .then((response) => {
+            const article = response.body.article
+            expect(article.votes).toBe(0)
+        })
+    })
+    test('GET:400 Should response with bad request if article_id is invalid', () => {
+        const votes = { 'inc_votes': 5}
+        return request(app)
+        .patch('/api/articles/invalid-id')
+        .send(votes)
+        .set('accept', 'application/json')
+        .expect(400)
+        .then((response) => {
+            expect(response.body.msg).toBe('Bad request')
+        })
+    })
+    test('GET:404 Should response with bad request if article_id is valid but non-existant', () => {
+        const votes = { 'inc_votes': 5}
+        return request(app)
+        .patch('/api/articles/999')
+        .send(votes)
+        .set('accept', 'application/json')
+        .expect(404)
+        .then((response) => {
+            expect(response.body.msg).toBe('Article not found')
+        })
+    })
+    test('GET:400 Should response with bad request if newVote has no value', () => {
+        const votes = { 'inc_votes': ''}
+        return request(app)
+        .patch('/api/articles/invalid-id')
+        .send(votes)
+        .set('accept', 'application/json')
+        .expect(400)
+        .then((response) => {
+            expect(response.body.msg).toBe('Bad request')
+        })
+    })
+})

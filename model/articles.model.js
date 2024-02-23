@@ -24,3 +24,24 @@ exports.selectArticles = () => {
     return results.rows
     })
 }
+
+exports.updateArticleVotes = (article_id, inc_votes) => {
+  const { 'inc_votes' : newVote } = inc_votes;
+  if(newVote && typeof newVote !== 'number') {
+    return Promise.reject({status: 400, msg: 'Bad request'})
+  }
+
+
+  const queryString = `UPDATE articles
+  SET votes = votes + $1 
+  WHERE article_id = $2 
+  RETURNING *;`
+
+  return db.query(queryString, [inc_votes, article_id])
+  .then((article) => {
+    if (article.rows.length === 0) {
+      return Promise.reject({ status: 404, msg: 'Article not found'})
+    }
+    return article.rows[0]
+  })
+}
