@@ -3,11 +3,15 @@ const { selectComments, insertComment } = require('../model/comments.model')
 
 const getComments = (req, res, next) => {
     const article_id = req.params.article_id;
-    selectArticleId(article_id).then(() => {
-        return selectComments(article_id)
-    }).then((comments) => {
-        res.status(200).send(comments)
-    }).catch((error) => {
+    selectComments(article_id)
+    .then((comments) => {
+        if (comments && comments.length > 0) {
+            res.status(200).send(comments)
+        } else {
+            res.status(404).send({ status: 404, msg: 'No comments found for this article'})
+        }
+    })
+    .catch((error) => {
         next(error)
     })
     }

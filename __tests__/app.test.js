@@ -157,6 +157,7 @@ describe('GET /api/articles', () => {
         .then((response) => {
         const comments = response.body
         comments.forEach((comment) => {
+            expect(comment.article_id).toBe(1)
             expect(comment).toHaveProperty('comment_id')
             expect(comment).toHaveProperty('votes')
             expect(comment).toHaveProperty('created_at')
@@ -179,10 +180,10 @@ describe('GET /api/articles', () => {
     })
     test('GET:404 Should respond with a appropriate status and error message when given a valid but non-existent id', () => {
         return request(app)
-        .get('/api/articles/999/comments')
+        .get('/api/articles/2/comments')
         .expect(404)
         .then((response) => {
-            expect(response.body.msg).toBe('Request not found')
+            expect(response.body.msg).toBe('No comments found for this article')
         })
     })
     test('GET:400 Should respond with an appropriate status and error message when given an invalid id', () => {
