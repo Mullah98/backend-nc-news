@@ -282,7 +282,7 @@ describe('GET /api/articles', () => {
         })
     })
 })
-describe('/api/articles/:article_id', () => {
+describe('PATCH /api/articles/:article_id', () => {
     test('GET:201 Should update an article by article_id', () => {
         const votes = { 'inc_votes': 10}
         return request(app)
@@ -335,6 +335,33 @@ describe('/api/articles/:article_id', () => {
         .patch('/api/articles/invalid-id')
         .send(votes)
         .set('accept', 'application/json')
+        .expect(400)
+        .then((response) => {
+            expect(response.body.msg).toBe('Bad request')
+        })
+    })
+})
+
+describe('DELETE /api/comments/:comment_id', () => {
+    test('GET:204 Should delete given comment by commentID', () => {
+        return request(app)
+        .delete('/api/comments/1')
+        .expect(204)
+        .then((response) => {
+            expect(response.body).toEqual({})
+        })
+    })
+    test('GET:404 Should return an appropiate error message if comment does not exist', () => {
+        return request(app)
+        .delete('/api/comments/99')
+        .expect(404)
+        .then((response) => {
+            expect(response.body.msg).toBe('Comment not found')
+        })
+    })
+    test('GET:404 Should return an appropiate error message if comment id is invalid', () => {
+        return request(app)
+        .delete('/api/comments/invalid-id')
         .expect(400)
         .then((response) => {
             expect(response.body.msg).toBe('Bad request')
