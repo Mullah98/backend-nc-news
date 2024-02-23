@@ -28,7 +28,7 @@
   },
   "GET /api/articles/:article_id": {
     "description": "Serves an article object when given an id",
-    "queries": [1],
+    "queries": ["article_id"],
     "exampleResponse": {
       "article_id": 1,
       "title": "Living in the shadow of a great man",
@@ -64,5 +64,17 @@
       "votes": 0,
       "created_at": "2020-11-03T21:00:00.000Z"
     }]
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description" : "Updates the given article with new comment",
+    "queries": ["article_id"],
+    "exampleResponse": {
+      "comment_id": 19,
+      "body": "This article is sensational",
+      "article_id": 1,
+      "author": "lurker",
+      "votes": 0,
+      "created_at": "2024-02-22T14:10:45.156Z"
+    }
   }
 }

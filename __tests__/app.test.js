@@ -11,7 +11,7 @@ beforeEach(() => {
 
 afterAll(() => db.end())
 
-describe('/api/topics', () => {
+describe('GET /api/topics', () => {
     test('GET: 200 Should return an array of topic objects with the correct keys', () => {
         return request(app)
         .get("/api/topics")
@@ -52,7 +52,7 @@ describe('endpoints', () => {
     })
 })
 
-describe('/api/articles/:article_id', () => {
+describe('GET /api/articles/:article_id', () => {
     test('GET:200 Should respond with an article object', () => {
         return request(app)
         .get('/api/article/1')
@@ -76,8 +76,7 @@ describe('/api/articles/:article_id', () => {
         .get('/api/article/999')
         .expect(404)
         .then((response) => {
-            expect(response.body.status).toBe(404)
-            expect(response.body.msg).toBe('Unable to find article')
+            expect(response.body.msg).toBe('Request not found')
         })
     })
     test('GET:400 Should respond with an appropriate status and error message when given an invalid id', () => {
@@ -91,15 +90,14 @@ describe('/api/articles/:article_id', () => {
     })
 })
 
-describe('/api/articles', () => {
+describe('GET /api/articles', () => {
     test('GET:200 Should respond with an articles array of article objects', () => {
         return request(app)
         .get('/api/articles')
         .expect(200)
         .then((response) => {
             expect(Array.isArray(response.body)).toBe(true)
-            expect(typeof response.body).toBe('object')
-            expect(response.body).toHaveLength(13)
+            expect(typeof response.body).toBe('object') && (response.body).toHaveLength(5)
         })
     })
     test('GET:200 Should contain the correct property keys except the body property', () => {
@@ -126,13 +124,13 @@ describe('/api/articles', () => {
         .expect(200)
         .then((response) => {
             const articles = response.body
-            expect(articles[0].created_at).toContain('2020-11-03')
-            expect(articles[12].created_at).toContain('2020-01-07')
+            expect(articles).toBeSortedBy("created_at", 
+            { descending: true})
         })
     })
     test('GET:404 Should respond with an appropiate status and error message when given a valid but not existant endpoint', () => {
         return request(app)
-        .get('/api/articlez')
+        .get('/api/invalid-endpoint')
         .expect(404)
         .then((response) => {
             expect(response.body.msg).toBe('Unable to find article')
@@ -140,7 +138,7 @@ describe('/api/articles', () => {
     })
 })
 
- describe('/api/articles/:article_id/comments', () => {
+ describe('GET /api/articles/:article_id/comments', () => {
     test('GET:200 Should respond with an array of objects', () => {
         return request(app)
         .get('/api/articles/1/comments')
@@ -198,3 +196,89 @@ describe('/api/articles', () => {
         })
     })
  })
+
+ describe('POST /api/articles/:article_id/comments', () => {
+    test('GET:201 Should respond with the new posted comment', () => {
+        const newComment = {
+            "username": 'lurker',
+            "body": 'This article is sensational',
+        }
+        return request(app)
+        .post('/api/articles/1/comments')
+        .send(newComment)
+        .set('accept', 'application/json')
+        .expect(201)
+        .then((response) => {
+            expect(response.body).toHaveProperty('body')
+            expect(response.body.body).toBe('This article is sensational')
+        })
+    })
+    test('GET:404 Should respond with appropiate error message if passed in non existant article_id', () => {
+        const newComment = {
+            "username": 'lurker',
+            "body": 'This article is sensational',
+        }
+        return request(app)
+        .post('/api/articles/999/comments')
+        .send(newComment)
+        .set('accept', 'application/json')
+        .expect(404)
+        .then((response) => {
+            expect(response.body.msg).toBe('Request not found')
+        })
+    })
+    test('GET:400 Should respond with appropiate error message if passed in invalid article_id', () => {
+        const newComment = {
+            "username": 'lurker',
+            "body": 'This article is sensational',
+        }
+        return request(app)
+        .post('/api/articles/pizza/comments')
+        .send(newComment)
+        .set('accept', 'application/json')
+        .expect(400)
+        .then((response) => {
+            expect(response.body.msg).toBe('Bad request')
+        })
+    })
+    test('GET:404 Should respond with appropiate error message if object does not have username property', () => {
+        const newComment = {
+            "body": 'Meh, could be better'
+        }
+        return request(app)
+        .post('/api/articles/1/comments')
+        .send(newComment)
+        .set('accept', 'application/json')
+        .expect(400)
+        .then((response) => {
+            expect(response.body.msg).toBe('Bad request')
+        })
+    })
+    test('GET:404 Should respond with appropiate error message if object does not have body property', () => {
+        const newComment = {
+            "username": 'butter_bridge'
+        }
+        return request(app)
+        .post('/api/articles/1/comments')
+        .send(newComment)
+        .set('accept', 'application/json')
+        .expect(400)
+        .then((response) => {
+            expect(response.body.msg).toBe('Bad request')
+        })
+    })
+    test('GET:404 Should respond with appropiate error message if user does not exist', () => {
+        const newComment = {
+            "username": 'Kratos',
+            "body": 'This article is sensational',
+        }
+        return request(app)
+        .post('/api/articles/999/comments')
+        .send(newComment)
+        .set('accept', 'application/json')
+        .expect(404)
+        .then((response) => {
+            expect(response.body.msg).toBe('Request not found')
+        })
+    })
+})

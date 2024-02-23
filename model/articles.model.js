@@ -7,29 +7,18 @@ exports.selectArticleId = (articleId) => {
     
     return db.query(queryString, [articleId])
         .then((results) => {
-            return results.rows[0];
+          if (!results.rows.length) {
+            return Promise.reject({status: 404, msg: 'Request not found'})
+          }
+          return results.rows[0];
         })
 };
 
 exports.selectArticles = () => {
-    const queryString = `SELECT 
-    a.title, 
-    a.topic, 
-    a.author, 
-    a.created_at, 
-    a.votes, 
-    a.article_img_url,
-    COUNT(c.comment_id) AS comment_count
-  FROM 
-    articles AS a
-  LEFT JOIN 
-    comments AS c 
-  ON 
-    a.article_id = c.article_id
-  GROUP BY 
-    a.title, a.topic, a.author, a.created_at, a.votes, a.article_img_url
-  ORDER BY
-    a.created_at DESC`;
+  const queryString = `SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.created_at, articles.votes, articles.article_img_url,
+  COUNT(comments) AS comment_count FROM articles JOIN comments ON comments.article_id=articles.article_id 
+  GROUP BY articles.article_id 
+  ORDER BY created_at DESC`;
     return db.query(queryString)
     .then((results) => {
     return results.rows

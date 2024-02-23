@@ -1,4 +1,5 @@
-const { selectComments } = require('../model/comments.model')
+const { selectArticleId } = require('../model/articles.model');
+const { selectComments, insertComment } = require('../model/comments.model')
 
 const getComments = (req, res, next) => {
     const article_id = req.params.article_id;
@@ -15,4 +16,14 @@ const getComments = (req, res, next) => {
     })
     }
 
-module.exports = { getComments }
+
+const postComment = (req, res, next) => {
+    const articleID = req.params.article_id;
+    selectArticleId(articleID).then(() => insertComment(articleID, req.body)
+    ).then((comment) => 
+    res.status(201).send(comment)
+    ).catch((error) => next(error));
+};
+
+
+module.exports = { getComments, postComment }
