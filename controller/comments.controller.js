@@ -17,7 +17,7 @@ const postComment = (req, res, next) => {
     const articleID = req.params.article_id;
     selectArticleId(articleID).then(() => insertComment(articleID, req.body)
     ).then((comment) => 
-    res.status(201).send(comment)
+    res.status(201).send({comment})
     ).catch((error) => next(error));
 };
 

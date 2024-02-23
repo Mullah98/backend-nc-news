@@ -209,8 +209,9 @@ describe('GET /api/articles', () => {
         .set('accept', 'application/json')
         .expect(201)
         .then((response) => {
-            expect(response.body).toHaveProperty('body')
-            expect(response.body.body).toBe('This article is sensational')
+            const comment = response.body.comment
+            expect(comment).toHaveProperty('body')
+            expect(comment.body).toBe('This article is sensational')
         })
     })
     test('GET:404 Should respond with appropiate error message if passed in non existant article_id', () => {
@@ -241,7 +242,7 @@ describe('GET /api/articles', () => {
             expect(response.body.msg).toBe('Bad request')
         })
     })
-    test('GET:404 Should respond with appropiate error message if object does not have username property', () => {
+    test('GET:400 Should respond with appropiate error message if object does not have username property', () => {
         const newComment = {
             "body": 'Meh, could be better'
         }
