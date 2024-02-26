@@ -33,4 +33,4 @@ const deleteComments = (req, res, next) => {
     .catch((error) => next(error))
 }
 
-module.exports = { getComments, postComment, deleteComments }
+module.exports = { getComments, postComment, deleteComments }   
