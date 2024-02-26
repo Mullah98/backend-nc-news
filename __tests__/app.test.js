@@ -36,7 +36,7 @@ describe('/api/*', () => {
         .expect(404)
         .then((response) => {
             const msg = response.body.msg
-            expect(msg).toBe('Unable to find article')
+            expect(msg).toBe('Unable to get request')
         })
     })
 })
@@ -133,7 +133,7 @@ describe('GET /api/articles', () => {
         .get('/api/invalid-endpoint')
         .expect(404)
         .then((response) => {
-            expect(response.body.msg).toBe('Unable to find article')
+            expect(response.body.msg).toBe('Unable to get request')
         })
     })
 })
@@ -255,7 +255,7 @@ describe('GET /api/articles', () => {
             expect(response.body.msg).toBe('Bad request')
         })
     })
-    test('GET:404 Should respond with appropiate error message if object does not have body property', () => {
+    test('GET:400 Should respond with appropiate error message if object does not have body property', () => {
         const newComment = {
             "username": 'butter_bridge'
         }
@@ -284,25 +284,25 @@ describe('GET /api/articles', () => {
     })
 })
 describe('PATCH /api/articles/:article_id', () => {
-    test('GET:201 Should update an article by article_id', () => {
+    test('GET:200 Should update an article by article_id', () => {
         const votes = { 'inc_votes': 10}
         return request(app)
         .patch('/api/articles/1')
         .send(votes)
         .set('accept', 'application/json')
-        .expect(201)
+        .expect(200)
         .then((response) => {
             const article = response.body.article
             expect(article.votes).toBe(110)
         })
     })
-    test('GET:201 Should decrease article vote when given a negative number', () => {
+    test('GET:200 Should decrease article vote when given a negative number', () => {
         const votes = { 'inc_votes': -100}
         return request(app)
         .patch('/api/articles/1')
         .send(votes)
         .set('accept', 'application/json')
-        .expect(201)
+        .expect(200)
         .then((response) => {
             const article = response.body.article
             expect(article.votes).toBe(0)
@@ -330,8 +330,8 @@ describe('PATCH /api/articles/:article_id', () => {
             expect(response.body.msg).toBe('Article not found')
         })
     })
-    test('GET:400 Should response with bad request if newVote has no value', () => {
-        const votes = { 'inc_votes': ''}
+    test('GET:400 Should respond with a bad request if newVote has a string type value', () => {
+        const votes = { 'inc_votes': 'ten'}
         return request(app)
         .patch('/api/articles/invalid-id')
         .send(votes)
@@ -360,12 +360,36 @@ describe('DELETE /api/comments/:comment_id', () => {
             expect(response.body.msg).toBe('Comment not found')
         })
     })
-    test('GET:404 Should return an appropiate error message if comment id is invalid', () => {
+    test('GET:400 Should return an appropiate error message if comment id is invalid', () => {
         return request(app)
         .delete('/api/comments/invalid-id')
         .expect(400)
         .then((response) => {
             expect(response.body.msg).toBe('Bad request')
+        })
+    })
+})
+
+describe('GET /api/users', () => {
+    test('GET:200 Should return all users', () => {
+        return request(app)
+        .get('/api/users')
+        .expect(200)
+        .then((response) => {
+            const users = response.body
+            users.forEach((user) => {
+                expect(user).toHaveProperty('username')
+                expect(user).toHaveProperty('name')
+                expect(user).toHaveProperty('avatar_url')
+            })
+        })
+    })
+    test('GET:404 Should respond with appropiate message if endpoint is valid but non-existant', () => {
+        return request(app)
+        .get('/api/invalid-users')
+        .expect(404)
+        .then((response) => {
+            expect(response.body.msg).toBe('Unable to get request')
         })
     })
 })

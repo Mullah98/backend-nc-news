@@ -3,6 +3,7 @@ const app = express();
 const { getTopics, getEndpoints } = require('./controller/topics.controller')
 const { getArticleId, getArticles, patchArticle } = require('./controller/articles.controller')
 const { getComments, postComment, deleteComments } = require('./controller/comments.controller')
+const { getAllUsers } = require('./controller/users.controller');
 
 app.use(express.json())
 
@@ -22,6 +23,8 @@ app.patch('/api/articles/:article_id', patchArticle)
 
 app.delete('/api/comments/:comment_id', deleteComments)
 
+app.get('/api/users', getAllUsers)
+
 //Error handling middleware
 
 app.use((err, req, res, next) => {
@@ -39,7 +42,7 @@ app.use((err, req, res, next) => {
 })
 
 app.all("/api/*", (req, res, next) => {
-    res.status(404).send({ satus: 404, msg: 'Unable to find article'})
+    res.status(404).send({ status: 404, msg: 'Unable to get request'})
 })
 app.use((err, req, res, next) => {
     res.status(500).send({ msg: 'Internal Server Error'})
