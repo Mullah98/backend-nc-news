@@ -7,7 +7,7 @@ exports.selectArticleId = (articleId) => {
     
     return db.query(queryString, [articleId])
         .then((results) => {
-          if (!results.rows.length) {
+          if (results.rows.length === 0) {
             return Promise.reject({status: 404, msg: 'Request not found'})
           }
           return results.rows[0];
