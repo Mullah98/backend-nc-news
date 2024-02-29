@@ -55,7 +55,7 @@ describe('endpoints', () => {
 describe('GET /api/articles/:article_id', () => {
     test('GET:200 Should respond with an article object', () => {
         return request(app)
-        .get('/api/article/1')
+        .get('/api/articles/1')
         .expect(200)
         .then((response) => {
             const article = response.body
@@ -73,7 +73,7 @@ describe('GET /api/articles/:article_id', () => {
     })
     test('GET:404 Should respond with a appropriate status and error message when given a valid but non-existent id', () => {
         return request(app)
-        .get('/api/article/999')
+        .get('/api/articles/999')
         .expect(404)
         .then((response) => {
             expect(response.body.msg).toBe('Request not found')
@@ -81,7 +81,7 @@ describe('GET /api/articles/:article_id', () => {
     })
     test('GET:400 Should respond with an appropriate status and error message when given an invalid id', () => {
         return request(app)
-        .get('/api/article/invalid')
+        .get('/api/articles/invalid')
         .expect(400)
         .then((response) => {
             expect(response.body.status).toBe(400)

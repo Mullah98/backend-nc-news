@@ -11,7 +11,7 @@ app.get("/api/topics", getTopics)
 
 app.get("/api", getEndpoints)
 
-app.get("/api/article/:article_id", getArticleId)
+app.get("/api/articles/:article_id", getArticleId)
 
 app.get("/api/articles", getArticles)
 
